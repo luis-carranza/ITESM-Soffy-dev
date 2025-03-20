@@ -2,6 +2,20 @@
 
 import { SignInResource } from "@clerk/types";
 
+interface ClerkError extends Error {
+  errors?: { message: string }[];
+}
+
+const isClerkError = (error: unknown): error is ClerkError => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "errors" in error &&
+    Array.isArray((error as ClerkError).errors) &&
+    typeof (error as ClerkError).errors?.[0]?.message === "string"
+  );
+};
+
 export const handleSignIn = async (
   e: React.FormEvent,
   signIn: SignInResource,
@@ -23,8 +37,11 @@ export const handleSignIn = async (
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      const clerkError = (error as any)?.errors?.[0]?.message;
-      setError(clerkError || error.message || "Sign in error");
+      if (isClerkError(error && error.message)) {
+        setError(error.message);
+      } else {
+        setError(error.message || "Sign in error");
+      }
     } else {
       setError("Unknown sign in error");
     }

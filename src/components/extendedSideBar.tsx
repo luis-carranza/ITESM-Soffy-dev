@@ -9,19 +9,27 @@ import { SignOutButton } from "@clerk/nextjs";
 
 const ExtendedSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeMenu, setActiveMenu] = useState(null);
-  const sidebarRef = useRef(null);
-  const popupRef = useRef(null);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
-  const toggleMenu = (menu) => {
+  const toggleMenu = (menu: string) => {
     setActiveMenu(activeMenu === menu ? null : menu);
   };
 
-  const handleClickOutside = (event) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      sidebarRef.current &&
+      event.target instanceof Node &&
+      !sidebarRef.current.contains(event.target)
+    ) {
       setIsExpanded(false);
     }
-    if (popupRef.current && !popupRef.current.contains(event.target)) {
+    if (
+      popupRef.current &&
+      event.target instanceof Node &&
+      !popupRef.current.contains(event.target)
+    ) {
       setActiveMenu(null);
     }
   };
